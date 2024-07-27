@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro</title>
+</head>
+<body>
+    <div class="bg-cadastro">
+        <div class="mid">
+            <div class="box">
+                <h1>Cadastro</h1>
+                <div class="inputs">
+                    <div class="input1">
+                                Nome:
+                            <br>
+                                <input type="text" id="input_nome" name="nome placeholder="Nome">
+                            <br>
+                                Email:
+                            <br>
+                                <input type="text" id="input_email" name="email" placeholder="exemplo@email.com">
+                            </div>
+                            <div class="input2">
+                                CPF:
+                        <br>
+                                <input type="number" id="input_cpf" name="cpf" placeholder="12345678910">
+                            <br>
+                            
+                                Senha:
+                        <br>
+                                <input type="password" id="input_senha" name="senha" placeholder="*********">
+                            
+                            </div>
+                                <button onclick="cadastrar()">
+                                    Cadastrar
+                                </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    function cadastrar(){
+        var nome = input_nome.value;
+        var email = input_email.value;
+        var cpf = input_cpf.value;
+        var senha = input_senha.value;
+        
+        if (nome == ``) {
+            input_nome.style.border = "2px solid #ff0000";
+            alert("Nome vazio!")
+
+        } else if (email == `` || email.indexOf("@") === -1 || email.endsWith(".com") == false) { // VALIDAÇÃO EMAIL
+            input_email.style.border = "2px solid #ff0000";
+            if (email == ``) {
+                alert("Email vazio!")
+            } else {
+                alert("Email incorreto!")
+            }
+
+        } else if (cpf == `` || cpf.length != 11) { // VALIDAÇÃO CPF
+            input_cpf.style.border = "2px solid #ff0000";
+            alert("CPF vazio!")
+
+        } else if (senha.length < 8 || senha.indexOf("!") === -1 && // VALIDAÇÃO DA SENHA
+            senha.indexOf(".") === -1 &&
+            senha.indexOf("@") === -1 &&
+            senha.indexOf("#") === -1) {
+            input_senha.style.border = "2px solid #ff0000";
+
+            if (senha.length < 8) {
+                alert("Senha abaixo de 8 caracteres")
+            } else {
+                alert("É necessario que a senha tenha no mínimo ! @ . #")
+            }
+
+        } else { // USUÁRIO CADASTRADO
+
+            fetch("/usuario/cadastrar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nomeServer: nome,
+                    emailServer: email,
+                    cpfServer: cpf,
+                    senhaServer: senha
+                }),
+            })
+                .then(function (resposta) {
+                    console.log("resposta: ", resposta);
+
+                    if (resposta.ok) {
+
+                        alert(`Deu certo, Senhor(a) ${nome}!`)
+
+                        setTimeout(() => {
+                            window.location.href = "login.html";
+                        }, "2000");
+
+                    } else {
+                        throw "Houve um erro ao tentar realizar o cadastro!";
+                    }
+                })
+                .catch(function (resposta) {
+                    console.log(`#ERRO: ${resposta}`);
+                });
+            return false;
+        }
+    }
+</script>
